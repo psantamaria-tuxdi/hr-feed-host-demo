@@ -1,8 +1,8 @@
 {
-    "name": "fuse-angular",
-    "version": "21.0.0",
-    "description": "Fuse - Angular Admin Template and Starter Project",
-    "author": "https://themeforest.net/user/srcn",
+    "name": "hr-feed-host",
+    "version": "0.0.1",
+    "description": "HR Feed Host",
+    "author": "Tuxdi",
     "license": "https://themeforest.net/licenses/standard",
     "private": true,
     "scripts": {
