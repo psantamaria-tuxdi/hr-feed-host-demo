@@ -3,6 +3,7 @@ import {
     ApplicationConfig,
     inject,
     isDevMode,
+    NgZone,
     provideAppInitializer,
 } from '@angular/core';
 import { LuxonDateAdapter } from '@angular/material-luxon-adapter';
@@ -121,5 +122,6 @@ export const appConfig: ApplicationConfig = {
                 ],
             },
         }),
+        globalThis.ngZone ? { provide: NgZone, useValue: globalThis.ngZone } : [],
     ],
 };
