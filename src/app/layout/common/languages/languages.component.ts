@@ -13,7 +13,7 @@ import {
     FuseNavigationService,
     FuseVerticalNavigationComponent,
 } from '@fuse/components/navigation';
-import { AvailableLangs, TranslocoService } from '@jsverse/transloco';
+import { LangDefinition, TranslocoService } from '@jsverse/transloco';
 import { take } from 'rxjs';
 
 @Component({
@@ -25,7 +25,7 @@ import { take } from 'rxjs';
     imports: [MatButtonModule, MatMenuModule, NgTemplateOutlet],
 })
 export class LanguagesComponent implements OnInit, OnDestroy {
-    availableLangs: AvailableLangs;
+    availableLangs: LangDefinition[];
     activeLang: string;
     flagCodes: any;
 
@@ -47,7 +47,7 @@ export class LanguagesComponent implements OnInit, OnDestroy {
      */
     ngOnInit(): void {
         // Get the available languages from transloco
-        this.availableLangs = this._translocoService.getAvailableLangs();
+        this.availableLangs = this._translocoService.getAvailableLangs() as LangDefinition[];
 
         // Subscribe to language changes
         this._translocoService.langChanges$.subscribe((activeLang) => {
