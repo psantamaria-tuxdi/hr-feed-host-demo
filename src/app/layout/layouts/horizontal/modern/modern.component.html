@@ -2,7 +2,7 @@
 <fuse-loading-bar></fuse-loading-bar>
 
 <!-- Navigation -->
-@if (isScreenSmall) {
+<!-- @if (isScreenSmall) {
     <fuse-vertical-navigation
         class="dark bg-gray-900 print:hidden"
         [mode]="'over'"
@@ -10,9 +10,9 @@
         [navigation]="navigation.default"
         [opened]="false"
     >
-        <!-- Navigation header hook -->
+
         <ng-container fuseVerticalNavigationContentHeader>
-            <!-- Logo -->
+
             <div class="flex h-20 items-center px-8 pt-6">
                 <img
                     class="w-24"
@@ -22,17 +22,17 @@
             </div>
         </ng-container>
     </fuse-vertical-navigation>
-}
+} -->
 
 <!-- Wrapper -->
 <div class="flex w-full min-w-0 flex-auto flex-col">
     <!-- Header -->
     <div
-        class="bg-card relative z-49 flex h-16 w-full flex-0 items-center px-4 shadow dark:border-b dark:bg-transparent dark:shadow-none sm:h-20 md:px-6 print:hidden"
+        class="bg-card relative z-49 flex h-16 w-full flex-0 items-center px-4 shadow sm:h-20 md:px-6 dark:border-b dark:bg-transparent dark:shadow-none print:hidden"
     >
         @if (!isScreenSmall) {
             <!-- Logo -->
-            <div class="mx-2 flex items-center lg:mr-8">
+            <!-- <div class="mx-2 flex items-center lg:mr-8">
                 <div class="hidden lg:flex">
                     <img
                         class="w-24 dark:hidden"
@@ -44,7 +44,7 @@
                     />
                 </div>
                 <img class="flex w-8 lg:hidden" src="images/logo/logo.svg" />
-            </div>
+            </div> -->
             <!-- Horizontal navigation -->
             <fuse-horizontal-navigation
                 class="mr-2"
@@ -53,17 +53,17 @@
             ></fuse-horizontal-navigation>
         }
         <!-- Navigation toggle button -->
-        @if (isScreenSmall) {
+        <!-- @if (isScreenSmall) {
             <button
                 mat-icon-button
                 (click)="toggleNavigation('mainNavigation')"
             >
                 <mat-icon [svgIcon]="'heroicons_outline:bars-3'"></mat-icon>
             </button>
-        }
+        } -->
         <!-- Components -->
         <div class="ml-auto flex items-center space-x-0.5 pl-2 sm:space-x-2">
-            <languages></languages>
+            <!-- <languages></languages>
             <fuse-fullscreen class="hidden md:block"></fuse-fullscreen>
             <search [appearance]="'bar'"></search>
             <shortcuts></shortcuts>
@@ -77,6 +77,11 @@
                 <mat-icon
                     [svgIcon]="'heroicons_outline:chat-bubble-left-right'"
                 ></mat-icon>
+            </button> -->
+
+            <!-- Home button -->
+            <button mat-icon-button (click)="goToHome()">
+                <mat-icon [svgIcon]="'heroicons_outline:home'"></mat-icon>
             </button>
             <user></user>
         </div>
@@ -93,13 +98,13 @@
 
     <!-- Footer -->
     <div
-        class="bg-card relative z-49 flex h-14 w-full flex-0 items-center border-t px-4 dark:bg-transparent sm:h-20 md:px-6 print:hidden"
+        class="bg-card relative z-49 flex h-14 w-full flex-0 items-center border-t px-4 sm:h-20 md:px-6 dark:bg-transparent print:hidden"
     >
-        <span class="text-secondary font-medium"
+        <!-- <span class="text-secondary font-medium"
             >Fuse &copy; {{ currentYear }}</span
-        >
+        > -->
     </div>
 </div>
 
 <!-- Quick chat -->
-<quick-chat #quickChat="quickChat"></quick-chat>
+<!-- <quick-chat #quickChat="quickChat"></quick-chat> -->
