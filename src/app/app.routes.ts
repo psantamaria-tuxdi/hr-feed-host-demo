@@ -53,19 +53,7 @@ export const appRoutes: Route[] = [
         ]
     },
 
-    // Landing routes
-    {
-        path: '',
-        component: LayoutComponent,
-        data: {
-            layout: 'empty'
-        },
-        children: [
-            {path: 'home', loadChildren: () => import('app/modules/landing/home/home.routes')},
-        ]
-    },
-
-    // Admin routes
+    // Social media feed routes
     {
         path: '',
         canActivate: [AuthGuard],
@@ -75,7 +63,6 @@ export const appRoutes: Route[] = [
             initialData: initialDataResolver
         },
         children: [
-            {path: 'example', loadChildren: () => import('app/modules/admin/example/example.routes')},
             {
                 path: 'employer/HR-social-media',
                 component: WebComponentWrapper,
