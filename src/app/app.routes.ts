@@ -3,6 +3,7 @@ import { initialDataResolver } from 'app/app.resolvers';
 import { AuthGuard } from 'app/core/auth/guards/auth.guard';
 import { NoAuthGuard } from 'app/core/auth/guards/noAuth.guard';
 import { LayoutComponent } from 'app/layout/layout.component';
+import { WebComponentWrapper, WebComponentWrapperOptions } from '@angular-architects/module-federation-tools';
 
 // @formatter:off
 /* eslint-disable max-len */
@@ -75,6 +76,19 @@ export const appRoutes: Route[] = [
         },
         children: [
             {path: 'example', loadChildren: () => import('app/modules/admin/example/example.routes')},
+            {
+                path: 'employer/HR-social-media',
+                component: WebComponentWrapper,
+                data: {
+                    type: 'module',
+                    remoteEntry:
+                        // AppConfig.settings.microfrontends.dashboard +
+                        'http://localhost:4202/remoteEntry.js',
+                    exposedModule: './bootstrap',
+                    elementName: 'mf-hr-root',
+                    roles: [],
+                } as WebComponentWrapperOptions,
+            },
         ]
     }
 ];
