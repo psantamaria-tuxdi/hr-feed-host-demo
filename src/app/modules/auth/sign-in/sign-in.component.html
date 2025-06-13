@@ -2,7 +2,7 @@
     class="flex min-w-0 flex-auto flex-col items-center sm:flex-row sm:justify-center md:items-start md:justify-start"
 >
     <div
-        class="relative hidden h-full flex-auto items-center justify-start overflow-hidden bg-gray-800 p-16 md:flex md:flex-grow lg:px-28 dark:border-l"
+        class="relative hidden h-full flex-auto items-center justify-start overflow-hidden bg-gray-800 p-16 md:flex lg:px-28 dark:border-r"
     >
         <!-- Background -->
         <!-- Rings -->
@@ -62,9 +62,9 @@
         </div>
     </div>
     <div
-        class="px-4 py-8 sm:bg-card sm:w-auto sm:rounded-2xl sm:p-12 sm:shadow md:flex md:h-full md:items-center md:justify-center md:rounded-none md:shadow-none"
+        class="w-full px-4 py-8 sm:bg-card sm:w-auto sm:rounded-2xl sm:p-12 sm:shadow md:flex md:h-full md:justify-end md:rounded-none md:p-16 md:pt-24 md:shadow-none"
     >
-        <div class="mx-auto max-w-80 sm:mx-0 sm:w-80">
+        <div class="mx-auto w-full max-w-80 sm:mx-0 sm:w-80">
             <!-- Logo -->
             <div class="w-12">
                 <img src="images/logo/logo.svg" />
@@ -76,25 +76,6 @@
             >
                 Iniciar sesión
             </div>
-            <!-- <div class="mt-0.5 flex items-baseline font-medium">
-                <div>Don't have an account?</div>
-                <a
-                    class="ml-1 text-primary-500 hover:underline"
-                    [routerLink]="['/sign-up']"
-                    >Sign up
-                </a>
-            </div> -->
-
-            <!-- Alert -->
-            <!-- <fuse-alert
-                class="mt-8"
-                [appearance]="'outline'"
-                [showIcon]="false"
-                [type]="'info'"
-            >
-                You are browsing <strong>Fuse Demo</strong>. Click on the "Sign
-                in" button to access the Demo and Documentation.
-            </fuse-alert> -->
 
             <!-- Alert -->
             @if (showAlert) {
@@ -113,16 +94,16 @@
             <form class="mt-8" [formGroup]="signInForm" #signInNgForm="ngForm">
                 <!-- Email field -->
                 <mat-form-field class="w-full">
-                    <mat-label>Direccion de correo electrónico</mat-label>
+                    <mat-label>Dirección de correo electrónico</mat-label>
                     <input id="email" matInput [formControlName]="'email'" />
                     @if (signInForm.get('email').hasError('required')) {
                         <mat-error>
-                            Direccion de correo electrónico requerido
+                            Dirección de correo electrónico requerido
                         </mat-error>
                     }
                     @if (signInForm.get('email').hasError('email')) {
                         <mat-error>
-                            Ingrese una direccion de correo electrónico valido
+                            Ingrese una dirección de correo electrónico válida
                         </mat-error>
                     }
                 </mat-form-field>
@@ -177,7 +158,7 @@
                     <a
                         class="text-md font-medium text-primary-500 hover:underline"
                         [routerLink]="['/forgot-password']"
-                        >Olvide mi contraseña
+                        >Olvidé mi contraseña
                     </a>
                 </div>
 
@@ -199,35 +180,6 @@
                         ></mat-progress-spinner>
                     }
                 </button>
-
-                <!-- Separator -->
-                <!-- <div class="mt-8 flex items-center">
-                    <div class="mt-px flex-auto border-t"></div>
-                    <div class="text-secondary mx-2">Or continue with</div>
-                    <div class="mt-px flex-auto border-t"></div>
-                </div> -->
-
-                <!-- Single sign-on buttons -->
-                <!-- <div class="mt-8 flex items-center space-x-4">
-                    <button class="flex-auto" type="button" mat-stroked-button>
-                        <mat-icon
-                            class="icon-size-5"
-                            [svgIcon]="'feather:facebook'"
-                        ></mat-icon>
-                    </button>
-                    <button class="flex-auto" type="button" mat-stroked-button>
-                        <mat-icon
-                            class="icon-size-5"
-                            [svgIcon]="'feather:twitter'"
-                        ></mat-icon>
-                    </button>
-                    <button class="flex-auto" type="button" mat-stroked-button>
-                        <mat-icon
-                            class="icon-size-5"
-                            [svgIcon]="'feather:github'"
-                        ></mat-icon>
-                    </button>
-                </div> -->
             </form>
         </div>
     </div>
