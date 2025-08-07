@@ -14,7 +14,7 @@ export const defaultNavigation: FuseNavigationItem[] = [
         title: 'Profile',
         type : 'basic',
         icon : 'heroicons_outline:chart-pie',
-        link : '/employer/HR-social-media'
+        link : '/hr-feed'
     }
 ];
 export const compactNavigation: FuseNavigationItem[] = [
