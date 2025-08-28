@@ -1,1 +1,4 @@
+## Proxy MF assets before SPA fallback
+/mf/*  https://hr-feed-mf.netlify.app/:splat  200
+
 /*  /index.html  200
