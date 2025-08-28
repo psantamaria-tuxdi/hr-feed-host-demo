@@ -71,7 +71,7 @@ export const appRoutes: Route[] = [
                     remoteEntry:
                         // AppConfig.settings.microfrontends.dashboard +
                         // 'http://localhost:4202/remoteEntry.js',
-                        'https://68b063fef9347f4f9f5edd5e--hr-feed-mf.netlify.app/remoteEntry.js',
+                        '/mf/remoteEntry.js',
                     exposedModule: './bootstrap',
                     elementName: 'mf-hr-root',
                     roles: [],

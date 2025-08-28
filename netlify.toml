@@ -2,3 +2,10 @@
   for = "/*"
   [headers.values]
     Access-Control-Allow-Origin = "*"
+
+# Proxy MF assets through the host to avoid CORS
+[[redirects]]
+  from = "/mf/*"
+  to = "https://hr-feed-mf.netlify.app/:splat"
+  status = 200
+  force = true
