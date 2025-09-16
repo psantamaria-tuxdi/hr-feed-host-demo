@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit, ViewChild, ViewEncapsulation, computed, input } from '@angular/core';
 import {
     FormsModule,
     NgForm,
@@ -13,7 +13,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseAlertComponent, FuseAlertType } from '@fuse/components/alert';
 import { AuthService } from 'app/core/auth/auth.service';
@@ -46,11 +46,14 @@ export class AuthSignInComponent implements OnInit {
     signInForm: UntypedFormGroup;
     showAlert: boolean = false;
 
+    redirectURL = input<string>(); // ?redirectURL=/dashboard
+    externalToken = input<string>('', { alias: 'token' }); // ?token=abc123 → this.externalToken()
+    hasExternalToken = computed(() => !!this.externalToken());
+
     /**
      * Constructor
      */
     constructor(
-        private _activatedRoute: ActivatedRoute,
         private _authService: AuthService,
         private _formBuilder: UntypedFormBuilder,
         private _router: Router
@@ -73,6 +76,12 @@ export class AuthSignInComponent implements OnInit {
             password: ['admin', Validators.required],
             rememberMe: [''],
         });
+
+        console.log('Redirect URL:', this.redirectURL());
+        console.log('Has external token:', this.hasExternalToken());
+        if (this.hasExternalToken()) {
+            this.authenticateWithExternalToken();
+        }
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -102,9 +111,7 @@ export class AuthSignInComponent implements OnInit {
                 // to the correct page after a successful sign in. This way, that url can be set via
                 // routing file and we don't have to touch here.
                 const redirectURL =
-                    this._activatedRoute.snapshot.queryParamMap.get(
-                        'redirectURL'
-                    ) || '/signed-in-redirect';
+                    this.redirectURL() || '/signed-in-redirect';
 
                 // Navigate to the redirect url
                 this._router.navigateByUrl(redirectURL);
@@ -126,5 +133,36 @@ export class AuthSignInComponent implements OnInit {
                 this.showAlert = true;
             }
         );
+    }
+
+    /**
+     * Authenticate with external token from query params
+     * Exchanges external token for our application token
+     */
+    authenticateWithExternalToken(): void {
+        // Hide the alert
+        this.showAlert = false;
+
+        const externalToken = this.externalToken();
+        console.log('Processing external token:', externalToken);
+
+        // Intercambiar token externo por token de nuestra aplicación
+        this._authService.authenticateWithExternalToken(externalToken).subscribe({
+            next: (response) => {
+                console.log('Authentication successful:', response);
+                // response.accessToken = nuestro token de aplicación
+                // Se almacena automáticamente en el AuthService
+                const redirectURL = this.redirectURL() || '/signed-in-redirect';
+                this._router.navigateByUrl(redirectURL);
+            },
+            error: (error) => {
+                console.error('Authentication failed:', error);
+                this.alert = {
+                    type: 'error',
+                    message: 'Sesión inválida o expirada',
+                };
+                this.showAlert = true;
+            }
+        });
     }
 }
