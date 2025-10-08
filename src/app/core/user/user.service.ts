@@ -33,6 +33,10 @@ export class UserService {
         return this._user.asObservable();
     }
 
+    refresh() {
+        this.loadFromStorage();
+    }
+
     reset() {
         this._user.next(null);
         localStorage.removeItem(this.userKey);
