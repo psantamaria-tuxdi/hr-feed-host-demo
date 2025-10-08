@@ -224,7 +224,11 @@ export class AuthService {
             return of(false);
         }
 
-        // If the access token exists, and it didn't expire, sign in using it
-        return this.signInUsingToken();
+        // TODO: check this, actually backend does not support signInUsingToken
+        this._userService.refresh();
+        this._authenticated = true;
+        return of(true);
+        // // If the access token exists, and it didn't expire, sign in using it
+        // return this.signInUsingToken();
     }
 }
