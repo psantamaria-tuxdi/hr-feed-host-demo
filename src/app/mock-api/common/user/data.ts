@@ -1,12 +1,12 @@
 import { User } from "app/core/user/user.types";
 
 // TODO: remove when connected to a real API
-/* eslint-disable */
 export const user: User = {
     "externalUserId": "12345",
     "displayName": "John Doe",
     "firstName": "John",
     "lastName": "Doe",
+    "email": "john.doe@example.com",
     "roles": [
       "user",
       "employee"

@@ -7,4 +7,6 @@ export interface User extends BaseDocument {
   lastName: string;
   roles: string[];
   avatar?: string;
+  email: string;
+  organization?: string;
 }
