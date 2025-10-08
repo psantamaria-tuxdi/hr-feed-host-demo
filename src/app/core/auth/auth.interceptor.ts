@@ -7,6 +7,7 @@ import {
 import { inject } from '@angular/core';
 import { AuthService } from 'app/core/auth/auth.service';
 import { AuthUtils } from 'app/core/auth/auth.utils';
+import { environment } from 'environments/environment.development';
 import { Observable, catchError, throwError } from 'rxjs';
 
 /**
@@ -32,7 +33,9 @@ export const authInterceptor = (
     // for the protected API routes which our response interceptor will
     // catch and delete the access token from the local storage while logging
     // the user out from the app.
+    const isApiRequest = req.url.startsWith(environment.apiUrl);
     if (
+        isApiRequest &&
         authService.accessToken &&
         !AuthUtils.isTokenExpired(authService.accessToken)
     ) {
@@ -49,11 +52,15 @@ export const authInterceptor = (
         catchError((error) => {
             // Catch "401 Unauthorized" responses
             if (error instanceof HttpErrorResponse && error.status === 401) {
-                // Sign out
-                authService.signOut();
+                // Only sign out and reload if user is actually authenticated
+                // This prevents reload loops on login attempts with invalid credentials
+                if (authService.accessToken) {
+                    // Sign out
+                    authService.signOut();
 
-                // Reload the app
-                location.reload();
+                    // Reload the app
+                    location.reload();
+                }
             }
 
             return throwError(error);
