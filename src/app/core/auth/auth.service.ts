@@ -1,15 +1,18 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
+import { LoginResponseDTO } from 'app/core/auth/auth.types';
 import { AuthUtils } from 'app/core/auth/auth.utils';
 import { UserService } from 'app/core/user/user.service';
-import { catchError, delay, Observable, of, switchMap, throwError } from 'rxjs';
-import { user as userData } from 'app/mock-api/common/user/data';
+import { environment } from 'environments/environment';
+import { catchError, Observable, of, switchMap, throwError } from 'rxjs';
+
 @Injectable({ providedIn: 'root' })
 export class AuthService {
     private _authenticated: boolean = false;
     private _httpClient = inject(HttpClient);
     private _userService = inject(UserService);
 
+    private readonly apiUrl = environment.apiUrl;
     private readonly accessTokenKey = 'hr-feed.accessToken';
 
     // -----------------------------------------------------------------------------------------------------
@@ -121,23 +124,20 @@ export class AuthService {
      *
      * @param externalToken - Token from external provider
      */
-    authenticateWithExternalToken(externalToken: string): Observable<any> {
+    authenticateWithExternalToken(externalToken: string): Observable<LoginResponseDTO | boolean> {
         // Throw error if the user is already logged in
         if (this._authenticated) {
             return throwError(() => new Error('User is already logged in.'));
         }
 
-        // TODO: connect to real API
-        this._authenticated = true;
-        this._userService.user = userData;
-        return of(true).pipe(delay(1000));
-
+        const payload: { token: string } = { token: externalToken };
         return this._httpClient
-            .post('api/auth/authenticate-external-token', { token: externalToken })
+            .post<LoginResponseDTO>(`${this.apiUrl}auth/external-login`, payload)
             .pipe(
-                switchMap((response: any) => {
-                    if (!response || !response.hr_access_token) {
+                switchMap((response) => {
+                    if (!response?.hr_access_token || !response?.user) {
                         // If the response is not valid, return false
+                        console.error('Invalid login response', response);
                         return of(false);
                     }
 
