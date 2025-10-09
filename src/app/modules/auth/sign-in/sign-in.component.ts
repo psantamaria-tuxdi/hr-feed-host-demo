@@ -1,32 +1,33 @@
-import { FuseAlertType } from './../../../../@fuse/components/alert/alert.types';
-import { Component, OnInit, ViewChild, ViewEncapsulation, computed, input } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation, input } from '@angular/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseAlertComponent } from '@fuse/components/alert';
 import { AuthService } from 'app/core/auth/auth.service';
 import { firstValueFrom } from 'rxjs';
+import { FuseAlertType } from './../../../../@fuse/components/alert/alert.types';
 
 @Component({
     selector: 'auth-sign-in',
     templateUrl: './sign-in.component.html',
     encapsulation: ViewEncapsulation.None,
     animations: fuseAnimations,
-    imports: [
-        FuseAlertComponent,
-        MatProgressSpinnerModule,
-    ],
+    imports: [FuseAlertComponent, MatProgressSpinnerModule],
 })
 export class AuthSignInComponent implements OnInit {
+    /**
+     * Query param inputs injected via Angular's withComponentInputBinding:
+     * - `redirectURL`: optional redirect path (e.g. `?redirectURL=/dashboard`).
+     * - `externalToken`: external SSO token provided as `?token=abc123`.
+     */
+    redirectURL = input<string>();
+    externalToken = input<string>('', { alias: 'token' });
+
     alert: { type: FuseAlertType; message: string } = {
         type: 'success',
         message: '',
     };
     showAlert: boolean = false;
-
-    redirectURL = input<string>(); // ?redirectURL=/dashboard
-    externalToken = input<string>('', { alias: 'token' }); // ?token=abc123 → this.externalToken()
-    hasExternalToken = computed(() => !!this.externalToken());
 
     /**
      * Constructor
@@ -44,7 +45,7 @@ export class AuthSignInComponent implements OnInit {
      * On init
      */
     async ngOnInit(): Promise<void> {
-        if (this.hasExternalToken()) {
+        if (this.externalToken()) {
             if (this._authService.accessToken) {
                 await firstValueFrom(this._authService.signOut());
             }
