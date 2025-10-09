@@ -44,8 +44,6 @@ export class AuthSignInComponent implements OnInit {
      * On init
      */
     async ngOnInit(): Promise<void> {
-        console.log('Redirect URL:', this.redirectURL());
-        console.log('Has external token:', this.hasExternalToken());
         if (this.hasExternalToken()) {
             if (this._authService.accessToken) {
                 await firstValueFrom(this._authService.signOut());
@@ -77,12 +75,10 @@ export class AuthSignInComponent implements OnInit {
         this.showAlert = false;
 
         const externalToken = this.externalToken();
-        console.log('Processing external token:', externalToken);
 
         // Intercambiar token externo por token de nuestra aplicación
         this._authService.authenticateWithExternalToken(externalToken).subscribe({
-            next: (response) => {
-                console.log('Authentication successful:', response);
+            next: () => {
                 const redirectURL = this.redirectURL() || '/signed-in-redirect';
                 this._router.navigateByUrl(redirectURL);
             },
