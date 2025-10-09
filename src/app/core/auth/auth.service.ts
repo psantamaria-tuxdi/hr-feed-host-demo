@@ -1,7 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
+import { LoginResponseDTO } from 'app/core/auth/auth.types';
 import { AuthUtils } from 'app/core/auth/auth.utils';
 import { UserService } from 'app/core/user/user.service';
+import { environment } from 'environments/environment';
 import { catchError, Observable, of, switchMap, throwError } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
@@ -9,6 +11,9 @@ export class AuthService {
     private _authenticated: boolean = false;
     private _httpClient = inject(HttpClient);
     private _userService = inject(UserService);
+
+    private readonly apiUrl = environment.apiUrl;
+    private readonly accessTokenKey = 'hr-feed.accessToken';
 
     // -----------------------------------------------------------------------------------------------------
     // @ Accessors
@@ -18,11 +23,11 @@ export class AuthService {
      * Setter & getter for access token
      */
     set accessToken(token: string) {
-        localStorage.setItem('accessToken', token);
+        localStorage.setItem(this.accessTokenKey, token);
     }
 
     get accessToken(): string {
-        return localStorage.getItem('accessToken') ?? '';
+        return localStorage.getItem(this.accessTokenKey) ?? '';
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -114,11 +119,58 @@ export class AuthService {
     }
 
     /**
+     * Authenticate with external token
+     * Exchanges external token for application access token
+     *
+     * @param externalToken - Token from external provider
+     */
+    authenticateWithExternalToken(externalToken: string): Observable<LoginResponseDTO | boolean> {
+        // Throw error if the user is already logged in
+        if (this._authenticated) {
+            return throwError(() => new Error('User is already logged in.'));
+        }
+
+        const payload: { token: string } = { token: externalToken };
+        return this._httpClient
+            .post<LoginResponseDTO>(`${this.apiUrl}auth/external-login`, payload)
+            .pipe(
+                switchMap((response) => {
+                    if (!response?.hr_access_token || !response?.user) {
+                        // If the response is not valid, return false
+                        console.error('Invalid login response', response);
+                        return of(false);
+                    }
+
+                    // Store the access token in the local storage
+                    this.accessToken = response.hr_access_token;
+
+                    // Set the authenticated flag to true
+                    this._authenticated = true;
+
+                    // Store the user on the user service
+                    this._userService.user = response.user;
+
+                    // Return the response
+                    return of(response);
+                }),
+                catchError((error) => {
+                    // Reset authentication state on error
+                    this._authenticated = false;
+                    localStorage.removeItem(this.accessTokenKey);
+
+                    // Re-throw the error for handling in component
+                    return throwError(error);
+                })
+            );
+    }
+
+    /**
      * Sign out
      */
     signOut(): Observable<any> {
         // Remove the access token from the local storage
-        localStorage.removeItem('accessToken');
+        localStorage.removeItem(this.accessTokenKey);
+        this._userService.reset();
 
         // Set the authenticated flag to false
         this._authenticated = false;
@@ -172,7 +224,11 @@ export class AuthService {
             return of(false);
         }
 
-        // If the access token exists, and it didn't expire, sign in using it
-        return this.signInUsingToken();
+        // TODO: check this, actually backend does not support signInUsingToken
+        this._userService.refresh();
+        this._authenticated = true;
+        return of(true);
+        // // If the access token exists, and it didn't expire, sign in using it
+        // return this.signInUsingToken();
     }
 }
