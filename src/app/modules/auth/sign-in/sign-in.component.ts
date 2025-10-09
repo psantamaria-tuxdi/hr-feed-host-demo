@@ -1,58 +1,39 @@
-import { Component, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
-import {
-    FormsModule,
-    NgForm,
-    ReactiveFormsModule,
-    UntypedFormBuilder,
-    UntypedFormGroup,
-    Validators,
-} from '@angular/forms';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatIconModule } from '@angular/material/icon';
-import { MatInputModule } from '@angular/material/input';
+import { Component, OnInit, ViewEncapsulation, input } from '@angular/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
-import { FuseAlertComponent, FuseAlertType } from '@fuse/components/alert';
+import { FuseAlertComponent } from '@fuse/components/alert';
 import { AuthService } from 'app/core/auth/auth.service';
+import { firstValueFrom } from 'rxjs';
+import { FuseAlertType } from './../../../../@fuse/components/alert/alert.types';
 
 @Component({
     selector: 'auth-sign-in',
     templateUrl: './sign-in.component.html',
     encapsulation: ViewEncapsulation.None,
     animations: fuseAnimations,
-    imports: [
-        RouterLink,
-        FuseAlertComponent,
-        FormsModule,
-        ReactiveFormsModule,
-        MatFormFieldModule,
-        MatInputModule,
-        MatButtonModule,
-        MatIconModule,
-        MatCheckboxModule,
-        MatProgressSpinnerModule,
-    ],
+    imports: [FuseAlertComponent, MatProgressSpinnerModule],
 })
 export class AuthSignInComponent implements OnInit {
-    @ViewChild('signInNgForm') signInNgForm: NgForm;
+    /**
+     * Query param inputs injected via Angular's withComponentInputBinding:
+     * - `redirectURL`: optional redirect path (e.g. `?redirectURL=/dashboard`).
+     * - `externalToken`: external SSO token provided as `?token=abc123`.
+     */
+    redirectURL = input<string>();
+    externalToken = input<string>('', { alias: 'token' });
 
     alert: { type: FuseAlertType; message: string } = {
         type: 'success',
         message: '',
     };
-    signInForm: UntypedFormGroup;
     showAlert: boolean = false;
 
     /**
      * Constructor
      */
     constructor(
-        private _activatedRoute: ActivatedRoute,
         private _authService: AuthService,
-        private _formBuilder: UntypedFormBuilder,
         private _router: Router
     ) {}
 
@@ -63,16 +44,23 @@ export class AuthSignInComponent implements OnInit {
     /**
      * On init
      */
-    ngOnInit(): void {
-        // Create the form
-        this.signInForm = this._formBuilder.group({
-            email: [
-                'hughes.brian@company.com',
-                [Validators.required, Validators.email],
-            ],
-            password: ['admin', Validators.required],
-            rememberMe: [''],
-        });
+    async ngOnInit(): Promise<void> {
+        if (this.externalToken()) {
+            if (this._authService.accessToken) {
+                await firstValueFrom(this._authService.signOut());
+            }
+
+            this.authenticateWithExternalToken();
+            return;
+        }
+
+        if (!this._authService.accessToken) {
+            this.alert = {
+                type: 'warning',
+                message: 'Sin datos de inicio de sesión',
+            };
+            this.showAlert = true;
+        }
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -80,51 +68,29 @@ export class AuthSignInComponent implements OnInit {
     // -----------------------------------------------------------------------------------------------------
 
     /**
-     * Sign in
+     * Authenticate with external token from query params
+     * Exchanges external token for our application token
      */
-    signIn(): void {
-        // Return if the form is invalid
-        if (this.signInForm.invalid) {
-            return;
-        }
-
-        // Disable the form
-        this.signInForm.disable();
-
+    authenticateWithExternalToken(): void {
         // Hide the alert
         this.showAlert = false;
 
-        // Sign in
-        this._authService.signIn(this.signInForm.value).subscribe(
-            () => {
-                // Set the redirect url.
-                // The '/signed-in-redirect' is a dummy url to catch the request and redirect the user
-                // to the correct page after a successful sign in. This way, that url can be set via
-                // routing file and we don't have to touch here.
-                const redirectURL =
-                    this._activatedRoute.snapshot.queryParamMap.get(
-                        'redirectURL'
-                    ) || '/signed-in-redirect';
+        const externalToken = this.externalToken();
 
-                // Navigate to the redirect url
+        // Intercambiar token externo por token de nuestra aplicación
+        this._authService.authenticateWithExternalToken(externalToken).subscribe({
+            next: () => {
+                const redirectURL = this.redirectURL() || '/signed-in-redirect';
                 this._router.navigateByUrl(redirectURL);
             },
-            (response) => {
-                // Re-enable the form
-                this.signInForm.enable();
-
-                // Reset the form
-                this.signInNgForm.resetForm();
-
-                // Set the alert
+            error: (error) => {
+                console.error('Authentication failed:', error);
                 this.alert = {
                     type: 'error',
-                    message: 'Correo electrónico o contraseña incorrectos',
+                    message: 'Sesión inválida o expirada',
                 };
-
-                // Show the alert
                 this.showAlert = true;
             }
-        );
+        });
     }
 }

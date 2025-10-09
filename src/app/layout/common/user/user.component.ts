@@ -1,5 +1,4 @@
 import { BooleanInput } from '@angular/cdk/coercion';
-import { NgClass } from '@angular/common';
 import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
@@ -28,7 +27,6 @@ import { Subject, takeUntil } from 'rxjs';
         MatButtonModule,
         MatMenuModule,
         MatIconModule,
-        NgClass,
         MatDividerModule,
     ],
 })
@@ -83,25 +81,25 @@ export class UserComponent implements OnInit, OnDestroy {
     // @ Public methods
     // -----------------------------------------------------------------------------------------------------
 
-    /**
-     * Update the user status
-     *
-     * @param status
-     */
-    updateUserStatus(status: string): void {
-        // Return if user is not available
-        if (!this.user) {
-            return;
-        }
+    // /**
+    //  * Update the user status
+    //  *
+    //  * @param status
+    //  */
+    // updateUserStatus(status: string): void {
+    //     // Return if user is not available
+    //     if (!this.user) {
+    //         return;
+    //     }
 
-        // Update the user
-        this._userService
-            .update({
-                ...this.user,
-                status,
-            })
-            .subscribe();
-    }
+    //     // Update the user
+    //     this._userService
+    //         .update({
+    //             ...this.user,
+    //             status,
+    //         })
+    //         .subscribe();
+    // }
 
     /**
      * Sign out
